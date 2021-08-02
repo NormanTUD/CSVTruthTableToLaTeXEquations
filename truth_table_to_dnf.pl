@@ -161,7 +161,7 @@ sub create_latex {
 				if(@always_false > 1) {
 					$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false).") \\wedge ($latex_code)";
 				} else {
-					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false)." \\wedge ($latex_code)";
+					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false)." \\wedge $latex_code";
 				}
 			} else {
 				$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false);
