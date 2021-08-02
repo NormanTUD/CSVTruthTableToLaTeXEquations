@@ -175,7 +175,7 @@ sub create_latex {
 
 	my $code = "";
 	foreach my $lc (@latex) {
-		$code = $code."\n\$\$$lc\$\$\n";
+		$code = $code."\n\\begin{equation}\n\t$lc\n\\end{equation}\n";
 	}
 
 	print <<EOF;
