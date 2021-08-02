@@ -1,35 +1,43 @@
-\documentclass{scrartcl}
+\documentclass[margin=300pt,preview,fleqn,varwidth]{standalone}
 
 \usepackage{amsmath}
 
 \begin{document}
 	
-\begin{equation}
-	y_0 = \underbrace{\left(x_0 \wedge x_1\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left( \lnot x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left( \lnot x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
-\end{equation}
+\begin{equation}\begin{aligned}
+	y_0 = \underbrace{\left(x_4 \wedge x_0 \wedge x_1\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left( \lnot x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
+\end{aligned}\end{equation}
 
-\begin{equation}
-	y_1 = \underbrace{\left(x_0 \wedge x_1\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left( \lnot x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
-\end{equation}
+\begin{equation}\begin{aligned}
+	y_1 = \underbrace{\left(x_4 \wedge x_1 \wedge x_0\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left( \lnot x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
+\end{aligned}\end{equation}
 
-\begin{equation}
-	y_2 = \underbrace{\left(x_0 \wedge x_1\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left( \lnot x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
-\end{equation}
+\begin{equation}\begin{aligned}
+	y_2 = \underbrace{\left(x_4 \wedge x_0 \wedge x_3 \wedge x_1\right)}_{\text{Neccessarily true}} \wedge (\underbrace{ \lnot x_2 \lor x_2}_{\text{Disjunction}})
+\end{aligned}\end{equation}
 
-\begin{equation}
-	y_3 = \underbrace{\left(x_1 \wedge x_0 \wedge x_3\right)}_{\text{Neccessarily true}} \wedge (\underbrace{ \lnot x_2 \lor x_2}_{\text{Disjunction}})
-\end{equation}
+\begin{equation}\begin{aligned}
+	y_3 = \underbrace{\left(x_0 \wedge x_1\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left( \lnot x_2 \wedge x_3 \wedge x_4\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3 \wedge x_4\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge x_3 \wedge x_4\right)}_{\text{Conjunction}} \lor \underbrace{\left( \lnot x_2 \wedge x_3 \wedge  \lnot x_4\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
+\end{aligned}\end{equation}
 
-\begin{equation}
-	y_4 = \underbrace{\left(x_0 \wedge x_1\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left( \lnot x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge x_3\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
-\end{equation}
+\begin{equation}\begin{aligned}
+	y_4 = \underbrace{ \lnot x_2}_{\text{Neccessarily false}} \wedge (\underbrace{x_4 \wedge x_3 \wedge x_1 \wedge x_0}_{\text{Neccessarily true}})
+\end{aligned}\end{equation}
 
-\begin{equation}
-	y_5 = \underbrace{ \lnot x_2}_{\text{Neccessarily false}} \wedge (\underbrace{x_0 \wedge x_3 \wedge x_1}_{\text{Neccessarily true}})
-\end{equation}
+\begin{equation}\begin{aligned}
+	y_5 = \underbrace{ \lnot x_0 \wedge  \lnot x_1 \wedge  \lnot x_3 \wedge  \lnot x_2 \wedge  \lnot x_4}_{\text{Neccessarily false}}
+\end{aligned}\end{equation}
 
-\begin{equation}
-	y_6 = \underbrace{ \lnot x_3 \wedge  \lnot x_0 \wedge  \lnot x_1 \wedge  \lnot x_2}_{\text{Neccessarily false}}
-\end{equation}
+\begin{equation}\begin{aligned}
+	y_6 = \underbrace{ \lnot x_2}_{\text{Neccessarily false}} \wedge (\underbrace{x_4 \wedge x_1 \wedge x_3 \wedge x_0}_{\text{Neccessarily true}})
+\end{aligned}\end{equation}
+
+\begin{equation}\begin{aligned}
+	y_7 = \underbrace{\underbrace{\left(x_0 \wedge x_1 \wedge x_2 \wedge  \lnot x_3 \wedge x_4\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_0 \wedge x_1 \wedge  \lnot x_2 \wedge  \lnot x_3 \wedge x_4\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_0 \wedge x_1 \wedge  \lnot x_2 \wedge x_3 \wedge  \lnot x_4\right)}_{\text{Conjunction}} \lor \underbrace{\left( \lnot x_0 \wedge  \lnot x_1 \wedge  \lnot x_2 \wedge  \lnot x_3 \wedge  \lnot x_4\right)}_{\text{Conjunction}}}_{\text{Disjunction}}
+\end{aligned}\end{equation}
+
+\begin{equation}\begin{aligned}
+	y_8 = \underbrace{\left(x_0 \wedge x_1 \wedge x_4\right)}_{\text{Neccessarily true}} \wedge (\underbrace{\underbrace{\left(x_2 \wedge x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left(x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left( \lnot x_2 \wedge  \lnot x_3\right)}_{\text{Conjunction}} \lor \underbrace{\left( \lnot x_2 \wedge x_3\right)}_{\text{Conjunction}}}_{\text{Disjunction}})
+\end{aligned}\end{equation}
 
 \end{document}

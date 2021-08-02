@@ -180,11 +180,11 @@ sub create_latex {
 
 	my $code = "";
 	foreach my $lc (@latex) {
-		$code = $code."\n\\begin{equation}\n\t$lc\n\\end{equation}\n";
+		$code = $code."\n\\begin{equation}\\begin{aligned}\n\t$lc\n\\end{aligned}\\end{equation}\n";
 	}
 
 	print <<EOF;
-\\documentclass{scrartcl}
+\\documentclass[margin=300pt,preview,fleqn,varwidth]{standalone}
 
 \\usepackage{amsmath}
 
