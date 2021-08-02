@@ -145,10 +145,14 @@ sub create_latex {
 		$latex_code .= join(" \\lor ", @latex_dataset);
 
 		if(@always_true) {
-			if(@always_true > 1) {
-				$latex_code = "(".join(" \\wedge ", map { $_->[0]->{value} } @always_true).") \\wedge ($latex_code)";
+			if($latex_code) {
+				if(@always_true > 1) {
+					$latex_code = "(".join(" \\wedge ", map { $_->[0]->{value} } @always_true).") \\wedge ($latex_code)";
+				} else {
+					$latex_code = join(" \\wedge ", map { $_->[0]->{value} } @always_true)." \\wedge ($latex_code)";
+				}
 			} else {
-				$latex_code = join(" \\wedge ", map { $_->[0]->{value} } @always_true)." \\wedge ($latex_code)";
+				$latex_code = join(" \\wedge ", map { $_->[0]->{value} } @always_true);
 			}
 		}
 
@@ -160,11 +164,7 @@ sub create_latex {
 					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false)." \\wedge ($latex_code)";
 				}
 			} else {
-				if(@always_false > 1) {
-					$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false).")";
-				} else {
-					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false);
-				}
+				$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false);
 			}
 		}
 
