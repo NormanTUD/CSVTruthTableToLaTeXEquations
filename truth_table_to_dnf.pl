@@ -15,7 +15,8 @@ $Data::Dumper::Sortkeys = 1;
 my %options = (
 	debug => 0,
 	csvfile => undef,
-	simplify => 0
+	simplify => 0,
+	underbrace => 0
 );
 
 sub debug (@) {
@@ -34,6 +35,8 @@ sub analyze_args {
 			$options{csvfile} = $1;
 		} elsif(/^--simplify$/) {
 			$options{simplify} = 1;
+		} elsif(/^--underbrace$/) {
+			$options{underbrace} = 1;
 		} else {
 			die "Unknown parameter $_";
 		}
@@ -135,36 +138,38 @@ sub create_latex {
 		foreach my $this_dataset (@dataset) {
 			if(@{$this_dataset}) {
 				if(@$this_dataset > 1) {
-					push @latex_dataset, "(".join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset).")";
+					push @latex_dataset, underbrace("\\left(".join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset)."\\right)", "\\text{Conjunction}");
 				} else {
 					push @latex_dataset, join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset);
 				}
 			}
 		}
 		
-		$latex_code .= join(" \\lor ", @latex_dataset);
+		if(@latex_dataset) {
+			$latex_code .= underbrace(join(" \\lor ", @latex_dataset), "\\text{Disjunction}");
+		}
 
 		if(@always_true) {
 			if($latex_code) {
 				if(@always_true > 1) {
-					$latex_code = "(".join(" \\wedge ", map { $_->{value} } @always_true).") \\wedge ($latex_code)";
+					$latex_code = underbrace("\\left(".join(" \\wedge ", map { $_->{value} } @always_true)."\\right)", "\\text{Neccessarily true}")." \\wedge ($latex_code)";
 				} else {
-					$latex_code = join(" \\wedge ", map { $_->{value} } @always_true)." \\wedge ($latex_code)";
+					$latex_code = underbrace(join(" \\wedge ", map { $_->{value} } @always_true)." \\wedge ($latex_code)", "\\text{Neccessarily true}");
 				}
 			} else {
-				$latex_code = join(" \\wedge ", map { $_->{value} } @always_true);
+				$latex_code = underbrace(join(" \\wedge ", map { $_->{value} } @always_true), "\\text{Neccessarily true}");
 			}
 		}
 
 		if(@always_false) {
 			if($latex_code) {
 				if(@always_false > 1) {
-					$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false).") \\wedge ($latex_code)";
+					$latex_code = underbrace("\\left(".join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false), "\\text{Neccessarily false}")."\\right) \\wedge ($latex_code)";
 				} else {
-					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false)." \\wedge ($latex_code)";
+					$latex_code = underbrace(join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false), "\\text{Neccessarily false}")." \\wedge ($latex_code)";
 				}
 			} else {
-				$latex_code = join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false);
+				$latex_code = underbrace(join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false), "\\text{Neccessarily false}");
 			}
 		}
 
@@ -180,6 +185,8 @@ sub create_latex {
 
 	print <<EOF;
 \\documentclass{scrartcl}
+
+\\usepackage{amsmath}
 
 \\begin{document}
 	$code
@@ -292,6 +299,15 @@ sub array_contains_only {
 		}
 	}
 	return 1;
+}
+
+sub underbrace {
+	my $text = shift;
+	my $label = shift;
+	if($options{underbrace}) {
+		$text = "\\underbrace{$text}_{$label}";
+	}
+	return $text;
 }
 
 analyze_args(@ARGV);
