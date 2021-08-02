@@ -48,7 +48,7 @@ sub create_latex {
 		my @dataset = @{$logic_expressions{$output_name}};
 		my @latex_dataset = ();
 		foreach my $this_dataset (@dataset) {
-			push @latex_dataset, "(".join(" \\wedge ", @$this_dataset).")";
+			push @latex_dataset, "(".join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset).")";
 		}
 		
 		$latex_code .= join(" \\lor ", @latex_dataset);
@@ -88,9 +88,9 @@ sub get_logic_expressions {
 					foreach my $this_input (@input) {
 						my $this_input_name = $data[0]->{headers}->[$k];
 						if($this_input == 1) {
-							push @logic, $this_input_name;
+							push @logic, { negated => 0, value => $this_input_name };
 						} else {
-							push @logic, "!$this_input_name";
+							push @logic, { negated => 1, value => $this_input_name };
 						}
 						$k++;
 					}
