@@ -4,6 +4,12 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use List::MoreUtils qw(uniq);
+
+use feature qw( state );
+
+use Cpanel::JSON::XS qw( );
+
 $Data::Dumper::Sortkeys = 1;
 
 my %options = (
@@ -112,24 +118,27 @@ sub create_latex {
 	my @latex = ();
 	foreach my $output_name (sort { $a cmp $b || $a <=> $b } keys %logic_expressions) {
 		my $latex_code = "";
-		my @dataset = @{$logic_expressions{$output_name}{equations}};
+		my @dataset = uniq(@{$logic_expressions{$output_name}{equations}});
 
 		my @always_true = ();
 		if(exists $logic_expressions{$output_name}{always_true}) {
-			@always_true = $logic_expressions{$output_name}{always_true};
+			@always_true = uniq($logic_expressions{$output_name}{always_true});
 		}
 
 		my @always_false = ();
 		if(exists $logic_expressions{$output_name}{always_false}) {
-			@always_false = $logic_expressions{$output_name}{always_false};
+			@always_false = uniq($logic_expressions{$output_name}{always_false});
 		}
 
 		my @latex_dataset = ();
+
 		foreach my $this_dataset (@dataset) {
-			if(@$this_dataset > 1) {
-				push @latex_dataset, "(".join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset).")";
-			} else {
-				push @latex_dataset, join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset);
+			if(@{$this_dataset}) {
+				if(@$this_dataset > 1) {
+					push @latex_dataset, "(".join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset).")";
+				} else {
+					push @latex_dataset, join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset);
+				}
 			}
 		}
 		
@@ -144,10 +153,18 @@ sub create_latex {
 		}
 
 		if(@always_false) {
-			if(@always_false > 1) {
-				$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false).") \\wedge ($latex_code)";
+			if($latex_code) {
+				if(@always_false > 1) {
+					$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false).") \\wedge ($latex_code)";
+				} else {
+					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false)." \\wedge ($latex_code)";
+				}
 			} else {
-				$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false)." \\wedge ($latex_code)";
+				if(@always_false > 1) {
+					$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false).")";
+				} else {
+					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false);
+				}
 			}
 		}
 
@@ -195,16 +212,36 @@ sub get_logic_expressions {
 					}
 				}
 				if(@logic) {
-					push @{$logic_expressions{$output_name}{equations}}, \@logic;
+					if(!element_already_exists_in_array(\@logic, @{$logic_expressions{$output_name}{equations}})) {
+						push @{$logic_expressions{$output_name}{equations}}, \@logic;
+					}
 				}
 				$j += 1;
 			}
 		}
 	}
 
+	#die Dumper \%logic_expressions;
+
 	return %logic_expressions;
 }
 
+sub element_already_exists_in_array {
+	my $element = shift;
+	my @array = @_;
+	my $key = key($element);
+	foreach (@array) {
+		if(key($_) eq $key) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+sub key {
+	state $encoder = Cpanel::JSON::XS->new->canonical;
+	return $encoder->encode($_[0]);
+}
 sub get_data {
 	my @data = ();
 	my $first = 1;
