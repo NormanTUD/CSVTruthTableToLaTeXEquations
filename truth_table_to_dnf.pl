@@ -154,7 +154,7 @@ sub create_latex {
 				if(@always_true > 1) {
 					$latex_code = underbrace("\\left(".join(" \\wedge ", map { $_->{value} } @always_true)."\\right)", "\\text{Neccessarily true}")." \\wedge ($latex_code)";
 				} else {
-					$latex_code = underbrace(join(" \\wedge ", map { $_->{value} } @always_true)." \\wedge ($latex_code)", "\\text{Neccessarily true}");
+					$latex_code = underbrace(join(" \\wedge ", map { $_->{value} } @always_true), "\\text{Neccessarily true}")." \\wedge ($latex_code)";
 				}
 			} else {
 				$latex_code = underbrace(join(" \\wedge ", map { $_->{value} } @always_true), "\\text{Neccessarily true}");
