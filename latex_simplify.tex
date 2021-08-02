@@ -3,15 +3,19 @@
 \begin{document}
 	
 \begin{equation}
-	y_0 = (x_1 \wedge x_0) \wedge ( \lnot x_2 \lor x_2)
+	y_0 = (x_0 \wedge x_1) \wedge (( \lnot x_2 \wedge x_3) \lor (x_2 \wedge  \lnot x_3) \lor (x_2 \wedge x_3) \lor ( \lnot x_2 \wedge  \lnot x_3))
 \end{equation}
 
 \begin{equation}
-	y_1 = (x_1 \wedge x_0) \wedge ( \lnot x_2 \lor x_2)
+	y_1 = (x_0 \wedge x_1) \wedge (( \lnot x_2 \wedge x_3) \lor (x_2 \wedge  \lnot x_3) \lor (x_2 \wedge x_3))
 \end{equation}
 
 \begin{equation}
-	y_2 = (x_1 \wedge x_0) \wedge ( \lnot x_2 \lor x_2)
+	y_2 = (x_0 \wedge x_1) \wedge (( \lnot x_2 \wedge x_3) \lor (x_2 \wedge  \lnot x_3) \lor (x_2 \wedge x_3))
+\end{equation}
+
+\begin{equation}
+	y_3 = (x_0 \wedge x_3 \wedge x_1) \wedge ( \lnot x_2 \lor x_2)
 \end{equation}
 
 \end{document}
