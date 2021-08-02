@@ -3,6 +3,8 @@
 Turn a list values in a CSV-file that corresponds to a truth table with multiple in- and outputs
 into a nice LaTeX-list of equations for getting this exact output.
 
+![Screenshot](example.jpg?raw=true "Example")
+
 # Example
 
 ```console
