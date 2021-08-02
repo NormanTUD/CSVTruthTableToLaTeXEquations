@@ -122,12 +122,12 @@ sub create_latex {
 
 		my @always_true = ();
 		if(exists $logic_expressions{$output_name}{always_true}) {
-			@always_true = uniq($logic_expressions{$output_name}{always_true});
+			@always_true = uniq(@{$logic_expressions{$output_name}{always_true}});
 		}
 
 		my @always_false = ();
 		if(exists $logic_expressions{$output_name}{always_false}) {
-			@always_false = uniq($logic_expressions{$output_name}{always_false});
+			@always_false = uniq(@{$logic_expressions{$output_name}{always_false}});
 		}
 
 		my @latex_dataset = ();
@@ -147,24 +147,24 @@ sub create_latex {
 		if(@always_true) {
 			if($latex_code) {
 				if(@always_true > 1) {
-					$latex_code = "(".join(" \\wedge ", map { $_->[0]->{value} } @always_true).") \\wedge ($latex_code)";
+					$latex_code = "(".join(" \\wedge ", map { $_->{value} } @always_true).") \\wedge ($latex_code)";
 				} else {
-					$latex_code = join(" \\wedge ", map { $_->[0]->{value} } @always_true)." \\wedge ($latex_code)";
+					$latex_code = join(" \\wedge ", map { $_->{value} } @always_true)." \\wedge ($latex_code)";
 				}
 			} else {
-				$latex_code = join(" \\wedge ", map { $_->[0]->{value} } @always_true);
+				$latex_code = join(" \\wedge ", map { $_->{value} } @always_true);
 			}
 		}
 
 		if(@always_false) {
 			if($latex_code) {
 				if(@always_false > 1) {
-					$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false).") \\wedge ($latex_code)";
+					$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false).") \\wedge ($latex_code)";
 				} else {
-					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false)." \\wedge $latex_code";
+					$latex_code = join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false)." \\wedge ($latex_code)";
 				}
 			} else {
-				$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false);
+				$latex_code = join(" \\wedge ", map { " \\lnot ".$_->{value} } @always_false);
 			}
 		}
 
