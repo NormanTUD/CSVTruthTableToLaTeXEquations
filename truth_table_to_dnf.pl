@@ -4,10 +4,12 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+$Data::Dumper::Sortkeys = 1;
 
 my %options = (
 	debug => 0,
-	csvfile => undef
+	csvfile => undef,
+	simplify => 0
 );
 
 sub debug (@) {
@@ -24,6 +26,8 @@ sub analyze_args {
 			$options{debug} = 1;
 		} elsif(/^--csvfile=(.*)$/) {
 			$options{csvfile} = $1;
+		} elsif(/^--simplify$/) {
+			$options{simplify} = 1;
 		} else {
 			die "Unknown parameter $_";
 		}
@@ -36,24 +40,119 @@ sub analyze_args {
 sub main {
 	my @data = get_data();
 	my %logic_expressions = get_logic_expressions(@data);
+	if($options{simplify}) {
+		%logic_expressions = simplify_logic_expression(%logic_expressions);
+	}
 	create_latex(%logic_expressions);
+}
+
+sub simplify_logic_expression {
+	my %logic_expressions = @_;
+
+	my %simplified_logic_expression = ();
+
+	my %always_true_always_false = ();
+
+	for my $output_name (sort { $a cmp $b || $a <=> $b } keys %logic_expressions) {
+		my @always_true = ();
+		my @always_false = ();
+
+		my %negated_list = ();
+
+		foreach my $equation_set (@{$logic_expressions{$output_name}{equations}}) {
+			foreach my $item (@{$equation_set}) {
+				push @{$negated_list{$item->{value}}}, $item->{negated};
+			}
+		}
+
+		foreach my $key (keys %negated_list) {
+			my @array = @{$negated_list{$key}};
+			if(array_contains_only(0, @array)) { # all not negated
+				push @always_true, $key;
+			} elsif (array_contains_only(1, @array)) { # all negated
+				push @always_false, $key;
+			}
+		}
+		push @{$always_true_always_false{$output_name}{always_true}}, @always_true;
+		push @{$always_true_always_false{$output_name}{always_false}}, @always_false;
+	}
+
+	for my $output_name (sort { $a cmp $b || $a <=> $b } keys %logic_expressions) {
+		my @always_true = @{$always_true_always_false{$output_name}{always_true}};
+		my @always_false = @{$always_true_always_false{$output_name}{always_false}};
+
+		foreach my $this_always_true (@always_true) {
+			push @{$simplified_logic_expression{$output_name}{always_true}}, { value => $this_always_true, negated => 0 };
+		}
+
+		foreach my $this_always_false (@always_false) {
+			push @{$simplified_logic_expression{$output_name}{always_false}}, { value => $this_always_false, negated => 1 };
+		}
+
+		my $j = 0;
+		foreach my $equation_set (@{$logic_expressions{$output_name}{equations}}) {
+			foreach my $equation (@{$equation_set}) {
+				if(!grep { $equation->{value} eq $_ } @always_true) {
+					if(!grep { $equation->{value} eq $_ } @always_false) {
+						push @{$simplified_logic_expression{$output_name}{equations}[$j]}, $equation;
+					}
+				}
+			}
+			$j++;
+		}
+	}
+
+	return %simplified_logic_expression;
 }
 
 sub create_latex {
 	my %logic_expressions = @_;
 
+
 	my @latex = ();
 	foreach my $output_name (sort { $a cmp $b || $a <=> $b } keys %logic_expressions) {
-		my $latex_code = "$output_name = ";
-		my @dataset = @{$logic_expressions{$output_name}};
+		my $latex_code = "";
+		my @dataset = @{$logic_expressions{$output_name}{equations}};
+
+		my @always_true = ();
+		if(exists $logic_expressions{$output_name}{always_true}) {
+			@always_true = $logic_expressions{$output_name}{always_true};
+		}
+
+		my @always_false = ();
+		if(exists $logic_expressions{$output_name}{always_false}) {
+			@always_false = $logic_expressions{$output_name}{always_false};
+		}
+
 		my @latex_dataset = ();
 		foreach my $this_dataset (@dataset) {
-			push @latex_dataset, "(".join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset).")";
+			if(@$this_dataset > 1) {
+				push @latex_dataset, "(".join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset).")";
+			} else {
+				push @latex_dataset, join(" \\wedge ", map { $_->{negated} ? " \\lnot ".$_->{value} : $_->{value} } @$this_dataset);
+			}
 		}
 		
 		$latex_code .= join(" \\lor ", @latex_dataset);
 
-		$latex_code =~ s#!# \\lnot #g;
+		if(@always_true) {
+			if(@always_true > 1) {
+				$latex_code = "(".join(" \\wedge ", map { $_->[0]->{value} } @always_true).") \\wedge ($latex_code)";
+			} else {
+				$latex_code = join(" \\wedge ", map { $_->[0]->{value} } @always_true)." \\wedge ($latex_code)";
+			}
+		}
+
+		if(@always_false) {
+			if(@always_false > 1) {
+				$latex_code = "(".join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false).") \\wedge ($latex_code)";
+			} else {
+				$latex_code = join(" \\wedge ", map { " \\lnot ".$_->[0]->{value} } @always_false)." \\wedge ($latex_code)";
+			}
+		}
+
+		$latex_code = "$output_name = $latex_code";
+
 		push @latex, $latex_code;
 	}
 
@@ -96,7 +195,7 @@ sub get_logic_expressions {
 					}
 				}
 				if(@logic) {
-					push @{$logic_expressions{$output_name}}, \@logic;
+					push @{$logic_expressions{$output_name}{equations}}, \@logic;
 				}
 				$j += 1;
 			}
@@ -144,6 +243,18 @@ sub get_data {
 	close $fh;
 
 	return @data;
+}
+
+sub array_contains_only {
+	my $x = shift;
+	my @array = @_;
+
+	foreach my $val (@array) {
+		if($x != $val) {
+			return 0;
+		}
+	}
+	return 1;
 }
 
 analyze_args(@ARGV);
